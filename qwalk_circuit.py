@@ -14,15 +14,15 @@ class QwalkerGridCircuit():
         self.vreg_len, self.ereg_len = self.num_qubits()
         self.reg_len = self.vreg_len + self.ereg_len
 
-        self.N = np.ceil(np.log2(dim1), dtype=int)
-        self.M = np.ceil(np.log2(dim2), dtype=int)
+        self.N = int(np.ceil(np.log2(dim1)))
+        self.M = int(np.ceil(np.log2(dim2)))
 
-        self.circuit = QuantumCircuit(reg_len, reg_len)
+        self.circuit = QuantumCircuit(self.reg_len, self.reg_len)
 
 
     def num_qubits(self):
-        return np.ceil(
-            np.log2([self.graph.vertices, self.graph.edges]), dtype=int)
+        return [int(x) for x in np.ceil( 
+            np.log2([self.graph.number_of_nodes(), 4]))]
 
 
     def counter(self, add=1):
@@ -30,13 +30,15 @@ class QwalkerGridCircuit():
         circuit = QuantumCircuit(self.reg_len)
         start = 0
         end = self.N
+        print(self.N)
 
         for i in range(start, end - 1):
             target_qubit = i
             control_qubits = np.arange(i + 1, end, dtype=int).tolist()
             circuit.mcx(
-                control_qubits + list(range(self.vreg_len, self.ereg_len)), target_qubit)
-        circuit.x(end)
+                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+        circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
+        circuit.barrier()
 
         for i in range(start, end - 1):
             target_qubit = i
@@ -47,11 +49,12 @@ class QwalkerGridCircuit():
 
             circuit.x(self.vreg_len + 1)
             circuit.mcx(
-                control_qubits + list(range(self.vreg_len, self.ereg_len)), target_qubit)
+                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
 
             for qubit in control_qubits:
                 circuit.x(qubit)
-        circuit.x(end)
+        circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
+        circuit.barrier()
 
         start = self.N
         end = self.N + self.M
@@ -65,10 +68,12 @@ class QwalkerGridCircuit():
 
             circuit.x(self.vreg_len)
             circuit.mcx(
-                control_qubits + list(range(self.vreg_len, self.ereg_len)), target_qubit)
-
+                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+            
             for qubit in control_qubits:
                 circuit.x(qubit)
+        circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
+        circuit.barrier()
 
         for i in range(start, end - 1):
             target_qubit = i
@@ -76,8 +81,9 @@ class QwalkerGridCircuit():
             circuit.x(self.vreg_len)
             circuit.x(self.vreg_len + 1)
             circuit.mcx(
-                control_qubits + list(range(self.vreg_len, self.ereg_len)), target_qubit)
-        circuit.x(end)
+                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+        circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
+        circuit.barrier()
     
         return circuit
 
