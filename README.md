@@ -17,7 +17,7 @@ The player is provided with the initial quantum state (*I*, which is the superpo
 ![Gates](https://github.com/iQuHACK/2021_EntanglementX/blob/main/gates.png)
 
 ## Implementation
-All the coin opertors and measurements are implemented using real ionQ hardware. We use efficient implememtation of quantum random walks for regular graphs from [Paper](https://arxiv.org/pdf/quant-ph/0504042.pdf). The quantum circuits are shown below. The assumption us that the player has chosen the hardamard coin operator.
+All the coin opertors and measurements are implemented using real ionQ hardware. We use efficient implememtation of quantum random walks for regular graphs from [[1]](https://arxiv.org/pdf/quant-ph/0504042.pdf). The quantum circuits are shown below. The assumption us that the player has chosen the hardamard coin operator.
 
 ![2D Circuit](https://github.com/iQuHACK/2021_EntanglementX/blob/main/2D_circuit.png)
 
@@ -29,3 +29,6 @@ All the coin opertors and measurements are implemented using real ionQ hardware.
 - Winning strategy for the player? 
 - Is random selection of coin operators beneficial when *T* uniform superposition of all edges?
 - What if the player is allowed to choose coin operators at each time step?
+
+## References
+[1] Ivens Carneiro et. al. "Entanglement in coined quantum walks on regular graphs", arxiv:0504042.
