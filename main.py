@@ -1,7 +1,8 @@
 from tkinter import *
 # TODO form something import somehting
-
+import math
 class Cell():
+    
     FILLED_COLOR_BG = "green"
     EMPTY_COLOR_BG = "white"
     FILLED_COLOR_BORDER = "green"
@@ -31,11 +32,13 @@ class Cell():
                 outline = Cell.EMPTY_COLOR_BORDER
 
             xmin = self.abs * self.size
-            xmax = xmin + self.size
+            xmax = xmin + self.size/2
             ymin = self.ord * self.size
-            ymax = ymin + self.size
+            ymax = ymin + self.size/2
 
-            self.master.create_rectangle(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
+            # self.master.create_rectangle(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
+            
+            self.master.create_oval(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
 
 class CellGrid(Canvas):
     def __init__(self,master, rowNumber, columnNumber, cellSize, *args, **kwargs):
@@ -73,15 +76,27 @@ class CellGrid(Canvas):
                 cell.draw()
 
     def _eventCoords(self, event):
+        y = event.y
+        x = event.x
+        
         row = int(event.y / self.cellSize)
         column = int(event.x / self.cellSize)
+        
+        ymin = column * self.cellSize
+        c_x = ymin + self.cellSize/4
+        xmin = row * self.cellSize
+        c_y = xmin + self.cellSize/4
+        if math.sqrt((c_x-x)**2+(c_y-y)**2) > 25:
+            
+            row = -1;
+            column = -1;
         return row, column
     def putGate(self,root,str):
         print(str) # TODO you get the gate here
         root.destroy()
     def ask_gate(self):
         
-        root = Tk()
+        root = Toplevel()
         root.title("title")
     
         w = 400     # popup window width
@@ -100,46 +115,42 @@ class CellGrid(Canvas):
         groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'Grover is selected'), width=10).pack()
         otherGate    = Button(root, text="other Gate", command=lambda : self.putGate(root,'other gate is selected'), width=10).pack()
         
-        mainloop()
+        # mainloop()
     
 
     def handleMouseClick(self, event):
         row, column = self._eventCoords(event)
-        
+        if row == -1:
+            return
         # TODO your function that gets row and column 
-        
-        cell_list = list()
-        for row_index in range(row - 1, row+2, 2):
-            if row_index < 0 or row_index >= self.rowNumber :
-                continue
-            cell = self.grid[row_index][column]
-            cell._switch()
-            cell_list.append(cell)
+        cell = self.grid[row][column]
+        cell._switch()
+        self.switched.append(cell)
+        cell.draw()
+        # cell_list = list()
+        # for row_index in range(row - 1, row+2, 2):
+        #     if row_index < 0 or row_index >= self.rowNumber :
+        #         continue
+        #     cell = self.grid[row_index][column]
+        #     cell._switch()
+        #     cell_list.append(cell)
          
-        for column_index in range(column - 1, column+2, 2):
-            if column_index < 0 or column_index >= self.columnNumber :
-                continue
-            # print(self.grid[0][0].fill)
-            cell = self.grid[row][column_index]
-            cell._switch()
-            cell_list.append(cell)
+        # for column_index in range(column - 1, column+2, 2):
+        #     if column_index < 0 or column_index >= self.columnNumber :
+        #         continue
+        #     # print(self.grid[0][0].fill)
+        #     cell = self.grid[row][column_index]
+        #     cell._switch()
+        #     cell_list.append(cell)
 
-        for element in cell_list :
-            element.draw()      
-            self.switched.append(element)
-        window = Tk()
-        window.wm_withdraw()
+        # for element in cell_list :
+        #     element.draw()      
+        #     self.switched.append(element)
+        # window = Tk()
+        # window.wm_withdraw()
         self.ask_gate()
     
-# #message at x:200,y:200
-#         window.geometry("1x1+200+200")#remember its .geometry("WidthxHeight(+or-)X(+or-)Y")
-#         # tkMessageBox.showerror(title="error",message="Error Message",parent=window)
 
-# #centre screen message
-#         window.geometry("1x1+"+str(window.winfo_screenwidth()/2)+"+"+str(window.winfo_screenheight()/2))
-#         # tkMessageBox.showinfo(title="Greetings", message="Hello World!")
-#         #add the cell to the list of cell switched during the click
-        
     
     def handleMouseMotion(self, event):
         row, column = self._eventCoords(event)
