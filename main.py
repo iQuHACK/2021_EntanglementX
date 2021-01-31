@@ -1,7 +1,10 @@
 from tkinter import *
 from random import randint
-# TODO form something import somehting
 import math
+
+import graph_generator as gg
+import qwalk_circuit as qc
+
 class Cell():
     
     FILLED_COLOR_BG = "green"
@@ -105,6 +108,8 @@ class Cell():
             self.master.create_oval(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
 
 class CellGrid(Canvas):
+
+
     def __init__(self,master, rowNumber, columnNumber, cellSize, boardSize ,*args, **kwargs):
         Canvas.__init__(self, master, width = cellSize * columnNumber , height = cellSize * rowNumber, *args, **kwargs)
         
@@ -121,6 +126,10 @@ class CellGrid(Canvas):
                 line.append(Cell(self, column, row, cellSize,boardSize))
 
             self.grid.append(line)
+
+        self.graph = gg.Graph(self.rowNumber, self.columnNumber, True)
+        self.qcircuit = qc.QwalkerGridCircuit(
+            self.rowNumber, self. columnNumber, self.graph)
 
         #memorize the cells that have been modified to avoid many switching of state during mouse motion.
         self.switched = []
@@ -157,18 +166,26 @@ class CellGrid(Canvas):
             row = -1;
             column = -1;
         return row, column
-    def putGate(self,root,str,cell):
-        cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 't', 'swap', 'phase','random']
+
+
+    def putGate(self,root,str,cell, row, col):
+        # cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 't', 'swap', 'phase','random']
 
         output_to_nitish = str
         print(str) # TODO you get the gate here
-        if str == "random":
-             output_to_nitish = cell_condtion[randint(2,6)]
-        print(output_to_nitish)
+        if row != -1:
+            self.graph.add_coin((row, col), output_to_nitish)
+            print(self.graph.vertex_coin)
+
+        # if str == "random":
+        #      output_to_nitish = cell_condtion[randint(2,6)]
+        # print(output_to_nitish)
         cell._switch(str)
         cell.draw()
         root.destroy()
-    def ask_gate(self,cell):
+
+
+    def ask_gate(self,cell, row, col):
         
         root = Toplevel()
         root.title("Gate selection")
@@ -185,16 +202,28 @@ class CellGrid(Canvas):
     
         w = Label(root, text="Please select your desired gate", width=120, height=10)
         w.pack()
-        hadamardGate = Button(root, text="Hadamard Gate", command=lambda : self.putGate(root,'hadamard',cell), width=10).pack()
-        groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'grover',cell), width=10).pack()
-        tGate    = Button(root, text="T Gate", command=lambda : self.putGate(root,'t',cell), width=10).pack()
-        SWAPGate = Button(root, text="SWAP Gate", command=lambda : self.putGate(root,'swap',cell), width=10).pack()
+
+
+        hadamardGate = Button(
+            root, text="Hadamard Gate",
+            command=lambda : self.putGate(root,'H',cell, row, col), width=10).pack()
+
+        groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'G',cell, row, col), width=10).pack()
+
+        tGate    = Button(root, text="T",
+        command=lambda : self.putGate(root,'T',cell,row, col), width=10).pack()
+
+        SWAPGate = Button(root, text="SWAP Gate", command=lambda : self.putGate(root,'SWAP',cell, row, col), width=10).pack()
         
-        phaseGate = Button(root, text="PHASE (S) Gate", command=lambda : self.putGate(root,'phase',cell), width=10).pack()
-        randomGate = Button(root, text="Random Gate", command=lambda : self.putGate(root,'random',cell), width=10).pack()
+        phaseGate = Button(root, text="PHASE (S) Gate", command=lambda : self.putGate(root,'S',cell, row, col), width=10).pack()
+
+        randomGate = Button(root, text="Random Gate", command=lambda : self.putGate(root,'rand',cell, row, col), width=10).pack()
         
-        cancel = Button(root, text="Cancel", command=lambda : self.putGate(root,'empty',cell), width=10).pack()
-        root.protocol("WM_DELETE_WINDOW", lambda : self.putGate(root,'empty',cell))
+        cancel = Button(root, text="Cancel",
+        command=lambda : self.putGate(root,'empty',cell, -1, -1), width=10).pack()
+
+        root.protocol(
+            "WM_DELETE_WINDOW", lambda : self.putGate(root,'empty',cell, -1, -1))
 
         root.mainloop()
     
@@ -205,6 +234,8 @@ class CellGrid(Canvas):
             return
         
         # TODO your function that gets row and column will go here
+
+
         
         cell = self.grid[row][column]
         if cell.fill != 0:
@@ -234,7 +265,7 @@ class CellGrid(Canvas):
         #     self.switched.append(element)
         # window = Tk()
         # window.wm_withdraw()
-        self.ask_gate(cell)
+        self.ask_gate(cell, row, column)
     
 
     
