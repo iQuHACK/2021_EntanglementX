@@ -4,33 +4,60 @@ import math
 class Cell():
     
     FILLED_COLOR_BG = "green"
+    FILLED_COLOR_SELECTED = "#594f4f"
+    FILLED_COLOR_HADAMARD = "#Fe4a49"
+    FILLED_COLOR_GROVER = "#2ab7ca"
+    FILLED_COLOR_OTHER = "#fed766"
+    
     EMPTY_COLOR_BG = "white"
-    FILLED_COLOR_BORDER = "green"
+    FILLED_COLOR_BORDER = "black"
     EMPTY_COLOR_BORDER = "black"
-
+    
+    cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 'other']
     def __init__(self, master, x, y, size):
         """ Constructor of the object called by Cell(...) """
         self.master = master
         self.abs = x
         self.ord = y
         self.size= size
-        self.fill= False
+        self.fill= 0
 
-    def _switch(self):
+    def _switch(self,condition_str):
         """ Switch if the cell is filled or not. """
         # self.fill= not self.fill
-        self.fill = True
-          
+        if condition_str == self.cell_condtion[0]:
+                self.fill = 0;
+        if condition_str == self.cell_condtion[1]:
+                self.fill = 1;
+        if condition_str == self.cell_condtion[2]:
+                self.fill = 2;
+        if condition_str == self.cell_condtion[3]:
+                self.fill = 3;
+        if condition_str == self.cell_condtion[4]:
+                self.fill = 4;
+         
     def draw(self):
         """ order to the cell to draw its representation on the canvas """
         if self.master != None :
-            fill = Cell.FILLED_COLOR_BG
+            # fill = Cell.FILLED_COLOR_BG
             outline = Cell.FILLED_COLOR_BORDER
 
-            if not self.fill:
+            if  self.fill == 0:
                 fill = Cell.EMPTY_COLOR_BG
                 outline = Cell.EMPTY_COLOR_BORDER
-
+            if  self.fill == 1:
+                fill = Cell.FILLED_COLOR_SELECTED
+                outline = Cell.FILLED_COLOR_BORDER
+            if  self.fill == 2:
+                fill = Cell.FILLED_COLOR_HADAMARD
+                outline = Cell.FILLED_COLOR_BORDER
+            if  self.fill == 3:
+                fill = Cell.FILLED_COLOR_GROVER
+                outline = Cell.FILLED_COLOR_BORDER
+            if  self.fill == 4:
+                fill = Cell.FILLED_COLOR_OTHER
+                outline = Cell.FILLED_COLOR_BORDER
+            
             xmin = self.abs * self.size
             xmax = xmin + self.size/2
             ymin = self.ord * self.size
@@ -91,10 +118,12 @@ class CellGrid(Canvas):
             row = -1;
             column = -1;
         return row, column
-    def putGate(self,root,str):
+    def putGate(self,root,str,cell):
         print(str) # TODO you get the gate here
+        cell._switch(str)
+        cell.draw()
         root.destroy()
-    def ask_gate(self):
+    def ask_gate(self,cell):
         
         root = Toplevel()
         root.title("title")
@@ -111,10 +140,10 @@ class CellGrid(Canvas):
     
         w = Label(root, text="Please select your desired gate", width=120, height=10)
         w.pack()
-        hadamardGate = Button(root, text="Hadamard Gate", command=lambda : self.putGate(root,'Hadamard is selected'), width=10).pack()
-        groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'Grover is selected'), width=10).pack()
-        otherGate    = Button(root, text="other Gate", command=lambda : self.putGate(root,'other gate is selected'), width=10).pack()
-        
+        hadamardGate = Button(root, text="Hadamard Gate", command=lambda : self.putGate(root,'hadamard',cell), width=10).pack()
+        groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'grover',cell), width=10).pack()
+        otherGate    = Button(root, text="Other Gate", command=lambda : self.putGate(root,'other',cell), width=10).pack()
+        cancel       = Button(root, text="Cancel", command=lambda : self.putGate(root,'empty',cell), width=10).pack()
         # mainloop()
     
 
@@ -124,8 +153,11 @@ class CellGrid(Canvas):
             return
         # TODO your function that gets row and column 
         cell = self.grid[row][column]
-        cell._switch()
-        self.switched.append(cell)
+        if cell.fill != 0:
+            return
+        if cell.fill == 0:
+            cell._switch('selected')
+        # self.switched.append(cell)
         cell.draw()
         # cell_list = list()
         # for row_index in range(row - 1, row+2, 2):
@@ -148,7 +180,7 @@ class CellGrid(Canvas):
         #     self.switched.append(element)
         # window = Tk()
         # window.wm_withdraw()
-        self.ask_gate()
+        self.ask_gate(cell)
     
 
     
