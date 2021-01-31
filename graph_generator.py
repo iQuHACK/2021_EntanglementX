@@ -13,6 +13,7 @@ class Graph():
         self.ymax = n
         self.periodic = periodic
         self.deg_of_freedom = 4
+        self.vertex_coin = {}
         
     def draw_graph(self):    
         nx.draw(self.G)
@@ -41,9 +42,13 @@ class Graph():
     def find_bit_rep_vertex(self, v):
         x_id,y_id = v
         bin_max = self.get_bit_lims()
-        x_bin = [int(x) for x in list(format(x_id, '0'+str(bin_max[0])+'b'))]      
-        y_bin = [int(y) for y in list(format(y_id, '0'+str(bin_max[1])+'b'))] 
-        
+        # x_bin = [int(x) for x in list(format(x_id, '0'+str(bin_max[0])+'b'))]      
+        # y_bin = [int(y) for y in list(format(y_id, '0'+str(bin_max[1])+'b'))] 
+
+        x_bin = format(x_id, '0'+str(bin_max[0])+'b')
+        y_bin = format(y_id, '0'+str(bin_max[1])+'b')
+
+
         return x_bin + y_bin
                                                       
         
@@ -56,5 +61,7 @@ class Graph():
         deg_of_fdm_bin = [int(d) for d in list(format(c, '0'+str(bin_max[2])+'b'))] 
         
         return bin_vertex + deg_of_fdm_bin
-                                                      
     
+
+    def add_coin(self, u, coin):
+        self.vertex_coin[self.find_bit_rep_vertex] = coin

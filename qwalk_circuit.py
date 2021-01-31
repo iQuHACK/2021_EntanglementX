@@ -1,5 +1,5 @@
+import random
 import numpy as np
-
 from qiskit import QuantumCircuit
 
 
@@ -20,11 +20,19 @@ class QwalkerGridCircuit():
 
 
         self.circuit = QuantumCircuit(self.reg_len, self.reg_len)
+    
+
+    def build_evolution_operator(self, vertex_coins):
+        self.c = self.coin(vertex_coins=vertex_coins)
+        self.c.name = "C"
+        self.s = self.flip_flop()
+        self.s.name = "S"
+        self.evo = self.c + self.s
+        self.evo.name = "SC"
 
 
-    # def num_qubits(self):
-    #     return [int(x) for x in np.ceil( 
-    #         np.log2([self.graph.number_of_nodes(), 4]))]
+    def evolve(self, t):
+        return self.evo.power(t)
 
 
     def flip_flop(self):
@@ -87,10 +95,8 @@ class QwalkerGridCircuit():
                 control_qubits + [self.vreg_len, self.vreg_len + 1],
                 target_qubit)
         circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
-        circuit.barrier()
-
-        circuit.x(self.vreg_len)
         circuit.x(self.vreg_len + 1)
+        circuit.barrier()
 
         return circuit
 
@@ -104,10 +110,41 @@ class QwalkerGridCircuit():
             circuit.barrier()
 
         else:
+            
             for vertex in vertex_coins:
 
-                vcoin = QuantumCircuit(self.ereg_len, name='HH')
-                vcoin.x(range(self.ereg_len))
+                func_dic = { 
+                    "H": lambda x, y: y.h(range(x)),
+                    "G": lambda x, y: y.append(
+                        self.grover_diffuser(),
+                        list(range(x))),
+                    "T": lambda x, y: y.t(range(x)),
+                    "S": lambda x,y: y.s(range(x)),
+                    "SWAP": lambda x,y: y.swap(0 ,1),
+                }
+
+                op = vertex_coins[vertex]
+                if op == "rand":
+                    op = random.choice(list(func_dic.keys()))
+
+                vcoin = QuantumCircuit(self.ereg_len, name='Coin'+op)
+
+
+                # if op == "H":
+                #     vcoin.h(range(self.ereg_len))
+
+                # elif op == "G":
+                #     vcoin.append(
+                #         self.grover_diffuser(),
+                #         list(range(self.ereg_len)))
+
+                # elif op == "T":
+                #     vcoin.t(range(self.ereng_len))
+
+                # elif op == "SWAP":
+                #     vcoin.swap(0, 1)
+                func_dic[op](self.ereg_len, vcoin)
+
                 cvcoin = vcoin.to_gate().control(
                     num_ctrl_qubits=self.vreg_len, ctrl_state=vertex)
 
@@ -133,15 +170,15 @@ class QwalkerGridCircuit():
             mcx_len = end - i
             num_control = mcx_len - 1
             mcx = QuantumCircuit(mcx_len)
-            print(np.arange(i + 1, mcx_len, dtype=int))
             mcx.mcx(np.arange(i + 1, mcx_len, dtype=int), target_qubit)
             mcx.to_gate().control(
                 num_ctrl_qubits=num_control,
                 ctrl_state=num_control * ctrl_state)
+        mcx.x(end - 1)
         return mcx
 
 
-    def simpler_flip_flop(self):
+    def alternative_flip_flop(self):
 
         flip_flop = QuantumCircuit(self.reg_len)
         
@@ -176,18 +213,25 @@ class QwalkerGridCircuit():
         return flip_flop
 
 
+    def grover_diffuser(self):
+        nqubits = self.ereg_len
+        qc = QuantumCircuit(nqubits)
+        qc.h(range(nqubits)) # Apply transformation |s> -> |00..0> (H-gates)
+        qc.x(range(nqubits)) # Apply transformation |00..0> -> |11..1> (X-gates)
 
-    # def flip_flop_circuit(self):
+        # Do multi-controlled-Z gate
+        qc.h(nqubits-1)
+        qc.mct(list(range(nqubits-1)), nqubits-1)  # multi-controlled-toffoli
+        qc.h(nqubits-1)
 
-    #     """ Create a flip-flop operator for any grid using a coordinate 
-    #     system in qubits. As an example, a 5-by-5 grid has 6 vertex qubits and
-    #     2 dof qubits, giving a state ket |x1x2x3,y1y2y3,c1c2>. The flip flop
-    #     bit can be implemented with operators
-    #     U = A_x |0><0|_c0 Iy + B_x |1><1|_c0 I_y
-    #     U = A_y |0><0|_c1 Ix + B_y |1><1|_c1 I_x.
-    #     """
+        qc.x(range(nqubits))
+        qc.h(range(nqubits))
 
-        
+        grover = qc.to_gate()
+        grover.name = "G"
+        return grover
 
-    # def create_coin(coin_list):
-    #     for
+
+    # def num_qubits(self):
+    #     return [int(x) for x in np.ceil( 
+    #         np.log2([self.graph.number_of_nodes(), 4]))]
