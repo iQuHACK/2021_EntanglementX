@@ -285,15 +285,22 @@ class CellGrid(Canvas):
         self.qcircuit.compile_and_run(
             self.rowNumber + self.columnNumber, self.graph.vertex_coin)
 
+    def run_q(self):
+        self.qcircuit.compile_and_run(
+            self.rowNumber + self.columnNumber, self.graph.vertex_coin,
+            mode='ionq_qpu')
+
 
 if __name__ == "__main__" :
     app = Tk()
     app.title("EntanglementX")
     num = int(input ("Enter number :") )
-    
+
     grid = CellGrid(app, num, num, 100,num)
     grid.pack()
-    Button(app, text="Run",
+    Button(app, text="Run (Simulator)",
         command=lambda : grid.run(), width=10).pack()
+    Button(app, text="Run",
+        command=lambda : grid.run_q(), width=10).pack()
 
     app.mainloop()

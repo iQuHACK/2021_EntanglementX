@@ -1,4 +1,5 @@
 import random
+import time
 import numpy as np
 from qiskit import QuantumCircuit, transpile
 
@@ -238,29 +239,33 @@ class QwalkerGridCircuit():
 
         from qiskit_ionq_provider import IonQProvider 
         from qiskit.tools.visualization import circuit_drawer 
+        from qiskit.providers.jobstatus import JobStatus
 
         provider = IonQProvider(token='UXA0mTBVroG62waNXpn6yCXDyx2iDNH0')
+        backend = provider.get_backend(mode)
 
         self.build_evolution_operator(vertex_coins)
         circuit = self.evolve(t)
 
-
-        # Get an IonQ simulator backend to run circuits on:
-        backend = provider.get_backend(mode)
-
-        #Run the circuit on the simulator and plot the results
         transpiled = transpile(circuit, backend=backend)
         print(circuit_drawer(circuit))
+
         job = backend.run(transpiled)
 
 
         #save job_id
-        job_id_1 = job.job_id()
+        job_id = job.job_id()
 
-        #Fetch the result:
-        result = job.result()
+        if mode == "ionq_simulator":
+            #Fetch the result:
+            result = job.result()
 
-        #Plot the result. Conditioned on the qubit n being in the 1 state, measurement of the output {q1 q2...qn} = {11...1} indicates a constant function, while any other value indicates a balanced function.
+        elif mode == "ionq_qpu":
+            job=backend.retrieve_job(job_id)
+            while job.status() is not JobStatus.DONE:
+                time.sleep(5)
+
+
         from qiskit.visualization import plot_histogram
         fig = plot_histogram(result.get_counts())
         fig.savefig("hist.png")
@@ -268,3 +273,4 @@ class QwalkerGridCircuit():
     # def num_qubits(self):
     #     return [int(x) for x in np.ceil( 
     #         np.log2([self.graph.number_of_nodes(), 4]))]
+
