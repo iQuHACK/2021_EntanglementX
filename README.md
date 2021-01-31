@@ -1,4 +1,4 @@
-# A quantum random walk based single player game
+# A quantum walk based single player game
 Matheus Guedes de Andrade, Mohammad Mobayenjarihani and Nitish K. Panigrahy
 ## Abstract
 ## Introduction
