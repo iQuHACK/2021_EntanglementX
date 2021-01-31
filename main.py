@@ -14,14 +14,18 @@ class Cell():
     EMPTY_COLOR_BORDER = "black"
     
     cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 'other']
-    def __init__(self, master, x, y, size):
+    
+    def __init__(self, master, x, y, size,boardSize):
         """ Constructor of the object called by Cell(...) """
         self.master = master
         self.abs = x
         self.ord = y
         self.size= size
         self.fill= 0
-
+        self.boardSize = boardSize
+        self.xoffset = 25;
+        self.yoffset = 25;
+        
     def _switch(self,condition_str):
         """ Switch if the cell is filled or not. """
         # self.fill= not self.fill
@@ -58,19 +62,26 @@ class Cell():
                 fill = Cell.FILLED_COLOR_OTHER
                 outline = Cell.FILLED_COLOR_BORDER
             
-            xmin = self.abs * self.size
+            xmin = self.abs * self.size + self.xoffset
             xmax = xmin + self.size/2
-            ymin = self.ord * self.size
+            ymin = self.ord * self.size + self.yoffset
             ymax = ymin + self.size/2
-
             # self.master.create_rectangle(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
-            
+            if self.abs < math.ceil(self.boardSize)-1 :
+                
+                self.master.create_line(xmax, ymin+ self.size/4, xmax + xmax - xmin, ymin+ self.size/4)
+            if self.ord < math.ceil(self.boardSize)-1 :
+                self.master.create_line(xmin + self.size/4, ymax , xmin+ self.size/4 , ymax + ymax - ymin)            
+            # if self.ord < math.ceil(self.boardSize/2):
+                
             self.master.create_oval(xmin, ymin, xmax, ymax, fill = fill, outline = outline)
 
 class CellGrid(Canvas):
-    def __init__(self,master, rowNumber, columnNumber, cellSize, *args, **kwargs):
+    def __init__(self,master, rowNumber, columnNumber, cellSize, boardSize ,*args, **kwargs):
         Canvas.__init__(self, master, width = cellSize * columnNumber , height = cellSize * rowNumber, *args, **kwargs)
-
+        
+        self.xoffset = 25;
+        self.yoffset = 25;
         self.cellSize = cellSize
         self.rowNumber = rowNumber
         self.columnNumber = columnNumber
@@ -79,7 +90,7 @@ class CellGrid(Canvas):
 
             line = []
             for column in range(columnNumber):
-                line.append(Cell(self, column, row, cellSize))
+                line.append(Cell(self, column, row, cellSize,boardSize))
 
             self.grid.append(line)
 
@@ -103,8 +114,8 @@ class CellGrid(Canvas):
                 cell.draw()
 
     def _eventCoords(self, event):
-        y = event.y
-        x = event.x
+        y = event.y - self.yoffset
+        x = event.x - self.xoffset
         
         row = int(event.y / self.cellSize)
         column = int(event.x / self.cellSize)
@@ -126,7 +137,7 @@ class CellGrid(Canvas):
     def ask_gate(self,cell):
         
         root = Toplevel()
-        root.title("title")
+        root.title("Gate selection")
     
         w = 400     # popup window width
         h = 400     # popup window height
@@ -144,7 +155,9 @@ class CellGrid(Canvas):
         groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'grover',cell), width=10).pack()
         otherGate    = Button(root, text="Other Gate", command=lambda : self.putGate(root,'other',cell), width=10).pack()
         cancel       = Button(root, text="Cancel", command=lambda : self.putGate(root,'empty',cell), width=10).pack()
-        # mainloop()
+        root.protocol("WM_DELETE_WINDOW", lambda : self.putGate(root,'empty',cell))
+
+        root.mainloop()
     
 
     def handleMouseClick(self, event):
@@ -198,9 +211,10 @@ class CellGrid(Canvas):
 
 if __name__ == "__main__" :
     app = Tk()
-   # num = int(input ("Enter number :") )
-    num = 10
-    grid = CellGrid(app, num, num, 100)
+    app.title("EntanglementX")
+    num = int(input ("Enter number :") )
+    
+    grid = CellGrid(app, num, num, 100,num)
     grid.pack()
 
     app.mainloop()
