@@ -38,14 +38,23 @@ class Graph():
     def get_bit_lims(self):
         return [int(x) for x in np.ceil(np.log2([self.xmax, self.ymax,self.deg_of_freedom]))]
     
-    def find_bit_rep(self, v, c):
+    def find_bit_rep_vertex(self, v):
         x_id,y_id = v
         bin_max = self.get_bit_lims()
-        bin_rep = []
         x_bin = [int(x) for x in list(format(x_id, '0'+str(bin_max[0])+'b'))]      
         y_bin = [int(y) for y in list(format(y_id, '0'+str(bin_max[1])+'b'))] 
+        
+        return x_bin + y_bin
+                                                      
+        
+    def find_bit_rep_edge(self, v, u):
+        x_id,y_id = v
+        c = self.find_deg_of_freedom(v,u)
+        bin_max = self.get_bit_lims()
+        bin_rep = []
+        bin_vertex = self.find_bit_rep_vertex(v)
         deg_of_fdm_bin = [int(d) for d in list(format(c, '0'+str(bin_max[2])+'b'))] 
         
-        return x_bin + y_bin + deg_of_fdm_bin
+        return bin_vertex + deg_of_fdm_bin
                                                       
     
