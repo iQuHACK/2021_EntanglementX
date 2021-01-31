@@ -12,7 +12,7 @@ We assume *G* to be a 2D torus graph as shown below.
 ![Grid](https://github.com/iQuHACK/2021_EntanglementX/blob/main/Torus_graph.png)
 
 ### The Rules
-The player is provided with the initial quantum state (*I*, which is the superposition of a list edge basis vectors with specific amplitudes), a target quantum state (*T*) and the walk length (*L*) . The goal of the player is to choose the coin operators for the vertices in *G* and a start vertex such that the quantum state after L iterations should be as close to *T* as possible. Some of the coin operators are shown below. The player also has an option to choose a *Random Coin Operator* which selects uniformly at random a coin operator for each node from the list of operotors before the game begins.
+The player is provided with the initial quantum state (*I*, which is the superposition of a list edge basis vectors with specific amplitudes), a target quantum state (*T*) and the walk length (*L*) . The goal of the player is to choose the coin operators for the vertices in *G* and a start vertex such that the quantum state after L iterations should be as close to *T* as possible. Some of the coin operators that the player can choose are shown below. The player also has an option to choose a *Random Coin Operator* which selects uniformly at random a coin operator for each node from the list of operotors before the game begins.
 
 ![Gates](https://github.com/iQuHACK/2021_EntanglementX/blob/main/gates.png)
 
