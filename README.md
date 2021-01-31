@@ -8,12 +8,22 @@ One can define the walker wavefunction at discrete time instant *t*. Thus the qu
 ## The Game
 ### Graph Struture
 We assume *G* to be a 2D torus graph as shown below.
-![alt text](https://github.com/npani/2021_EntanglementX/blob/[branch]/image.jpg?raw=true)
+
+![Grid](https://github.com/iQuHACK/2021_EntanglementX/blob/main/Torus_graph.png)
 
 ### The Rules
 The player is provided with the initial quantum state (*I*, which is the superposition of a list edge basis vectors with specific amplitudes), a target quantum state (*T*) and the walk length (*L*) . The goal of the player is to choose the coin operators for the vertices in *G* and a start vertex such that the quantum state after L iterations should be as close to *T* as possible. We provide the following list of coin operators.
 
-Note that, all the coin opertors and measurements are implemented using real ionQ hardware.
+![Grid](https://github.com/iQuHACK/2021_EntanglementX/blob/main/Torus_graph.png)
+
+## Implementation
+All the coin opertors and measurements are implemented using real ionQ hardware. We use efficient implememtation of quantum random walks for regular graphs from [Paper](https://arxiv.org/pdf/quant-ph/0504042.pdf). The quantum circuits are shown below. The assumption us that the player has chosen the hardamard coin operator.
+
+![Grid](https://github.com/iQuHACK/2021_EntanglementX/blob/main/Torus_graph.png)
+
+![Grid](https://github.com/iQuHACK/2021_EntanglementX/blob/main/Torus_graph.png)
+
+
 ## Future Work
 - How to set *T* as a game designer? *T* uniform superposition of all edges?
 - Winning strategy for the player? 
