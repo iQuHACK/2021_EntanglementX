@@ -1,5 +1,5 @@
 from tkinter import *
-
+# form something import somehting* TODO
 class Cell():
     FILLED_COLOR_BG = "green"
     EMPTY_COLOR_BG = "white"
@@ -16,8 +16,9 @@ class Cell():
 
     def _switch(self):
         """ Switch if the cell is filled or not. """
-        self.fill= not self.fill
-        
+        # self.fill= not self.fill
+        self.fill = True
+          
     def draw(self):
         """ order to the cell to draw its representation on the canvas """
         if self.master != None :
@@ -40,7 +41,8 @@ class CellGrid(Canvas):
         Canvas.__init__(self, master, width = cellSize * columnNumber , height = cellSize * rowNumber, *args, **kwargs)
 
         self.cellSize = cellSize
-
+        self.rowNumber = rowNumber
+        self.columnNumber = columnNumber
         self.grid = []
         for row in range(rowNumber):
 
@@ -76,26 +78,49 @@ class CellGrid(Canvas):
 
     def handleMouseClick(self, event):
         row, column = self._eventCoords(event)
-        pr
-        cell = self.grid[row][column]
-        cell._switch()
-        cell.draw()
-        #add the cell to the list of cell switched during the click
-        self.switched.append(cell)
+        # your function that gets row and column TODO
+        cell_list = list()
+        for row_index in range(row - 1, row+2, 2):
+            if row_index < 0 or row_index >= self.rowNumber :
+                continue
+            cell = self.grid[row_index][column]
+            cell._switch()
+            cell_list.append(cell)
+          
+        for column_index in range(column - 1, column+2, 2):
+            if column_index < 0 or column_index >= self.columnNumber :
+                continue
+            print(self.grid[0][0].fill)
+            cell = self.grid[row][column_index]
+            cell._switch()
+            cell_list.append(cell)
 
+            # cell.draw()
+            # self.switched.append(cell)
+               
+        for i in cell_list :
+            i.draw()      
+            self.switched.append(i)
+        
+        #add the cell to the list of cell switched during the click
+        
+    
     def handleMouseMotion(self, event):
         row, column = self._eventCoords(event)
         cell = self.grid[row][column]
 
         if cell not in self.switched:
-            cell._switch()
+            #cell._switch()
             cell.draw()
             self.switched.append(cell)
-
+    def neighbors(row,column):
+        cordinates = list();
+        
 
 if __name__ == "__main__" :
     app = Tk()
-    num = int(input ("Enter number :") )
+   # num = int(input ("Enter number :") )
+    num = 10
     grid = CellGrid(app, num, num, 100)
     grid.pack()
 
