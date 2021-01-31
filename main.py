@@ -23,7 +23,7 @@ class Cell():
     FILLED_COLOR_BORDER = "black"
     EMPTY_COLOR_BORDER = "black"
     
-    cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 't', 'swap', 'phase','random']
+    cell_condtion = ['empty', 'selected', 'H', 'G', 'T', 'SWAP', 'S','rand']
     
     def __init__(self, master, x, y, size,boardSize):
         """ Constructor of the object called by Cell(...) """
@@ -280,7 +280,8 @@ class CellGrid(Canvas):
     def neighbors(row,column):
         cordinates = list();
         
-
+def run():
+    pass # TODO
 if __name__ == "__main__" :
     app = Tk()
     app.title("EntanglementX")
@@ -288,5 +289,7 @@ if __name__ == "__main__" :
     
     grid = CellGrid(app, num, num, 100,num)
     grid.pack()
+    run = Button(app, text="Run",
+        command=lambda : run, width=10).pack()
 
     app.mainloop()
