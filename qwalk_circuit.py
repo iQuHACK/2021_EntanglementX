@@ -93,6 +93,22 @@ class QwalkerGridCircuit():
         return circuit
 
 
+    def coin_operator(self, vertex_coins=None):
+
+        circuit = QuantumCircuit(self.reg_len)
+        if vertex_coins is None:
+            circuit.h(self.vreg_len)
+            circuit.h(self.vreg_len + 1)
+            circuit.barrier()
+
+        else:
+            for vertex, coin in vertex_coins:
+                circuit.append(
+                    coin.control(self.vreg_len, label="C", ctrl_state=vertex))
+            circuit.barrier()
+
+        return circuit
+
 
     # def flip_flop_circuit(self):
 
