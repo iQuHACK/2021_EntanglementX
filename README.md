@@ -11,7 +11,7 @@ We assume *G* to be a 2D torus graph as shown below.
 ![alt text](https://github.com/npani/2021_EntanglementX/blob/[branch]/image.jpg?raw=true)
 
 ### The Rules
-The player is provided with the initial quantum state (*I*, which is the superposition of a list edge basis vectors with specific amplitudes), a target quantum state (*T*) and the walk length (*L*) . The goal of the player is to choose the coin operators for the vertices in *G* and a start vertex such that the quantum state after K iterations should be as close to *T* as possible. We provide the following list of coin operators.
+The player is provided with the initial quantum state (*I*, which is the superposition of a list edge basis vectors with specific amplitudes), a target quantum state (*T*) and the walk length (*L*) . The goal of the player is to choose the coin operators for the vertices in *G* and a start vertex such that the quantum state after L iterations should be as close to *T* as possible. We provide the following list of coin operators.
 
 
 ## Future Work
