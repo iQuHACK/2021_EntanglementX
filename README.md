@@ -16,4 +16,6 @@ The player is provided with the initial quantum state (*I*, which is the superpo
 
 ## Future Work
 - How to set *T* as a game designer? *T* uniform superposition of all edges?
-- Winning trategy for the player? Random selection of coin operators when *T* uniform superposition of all edges?
+- Winning strategy for the player? 
+- Is random selection of coin operators beneficial when *T* uniform superposition of all edges?
+- What if the player is allowed to choose coin operators at each time step?
