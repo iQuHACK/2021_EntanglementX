@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 
 
 class QwalkerGridCircuit():
@@ -32,12 +32,14 @@ class QwalkerGridCircuit():
 
 
     def evolve(self, t):
-        return self.evo.power(t)
+        circuit = self.evo.power(t)
+        circuit.measure(range(self.reg_len), range(self.reg_len))
+        return circuit
 
 
     def flip_flop(self):
 
-        circuit = QuantumCircuit(self.reg_len)
+        circuit = QuantumCircuit(self.reg_len, self.reg_len)
         start = 0
         end = self.N
 
@@ -103,7 +105,7 @@ class QwalkerGridCircuit():
 
     def coin(self, vertex_coins=None):
 
-        circuit = QuantumCircuit(self.reg_len)
+        circuit = QuantumCircuit(self.reg_len, self.reg_len)
         if vertex_coins is None:
             circuit.h(self.vreg_len)
             circuit.h(self.vreg_len + 1)
@@ -231,6 +233,37 @@ class QwalkerGridCircuit():
         grover.name = "G"
         return grover
 
+    
+    def compile_and_run(self, t, vertex_coins, mode="ionq_simulator"):
+
+        from qiskit_ionq_provider import IonQProvider 
+        from qiskit.tools.visualization import circuit_drawer 
+
+        provider = IonQProvider(token='UXA0mTBVroG62waNXpn6yCXDyx2iDNH0')
+
+        self.build_evolution_operator(vertex_coins)
+        circuit = self.evolve(t)
+
+
+        # Get an IonQ simulator backend to run circuits on:
+        backend = provider.get_backend(mode)
+
+        #Run the circuit on the simulator and plot the results
+        transpiled = transpile(circuit, backend=backend)
+        print(circuit_drawer(circuit))
+        job = backend.run(transpiled)
+
+
+        #save job_id
+        job_id_1 = job.job_id()
+
+        #Fetch the result:
+        result = job.result()
+
+        #Plot the result. Conditioned on the qubit n being in the 1 state, measurement of the output {q1 q2...qn} = {11...1} indicates a constant function, while any other value indicates a balanced function.
+        from qiskit.visualization import plot_histogram
+        fig = plot_histogram(result.get_counts())
+        fig.savefig("hist.png")
 
     # def num_qubits(self):
     #     return [int(x) for x in np.ceil( 

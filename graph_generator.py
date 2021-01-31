@@ -1,7 +1,9 @@
 from qiskit import Aer
 from qiskit_ionq_provider import IonQProvider 
+
 import networkx as nx
 import numpy as np
+import qwalk_circuit as qc
 
 class Graph():
     # m: Number of rows, n: number of columns
@@ -14,8 +16,9 @@ class Graph():
         self.periodic = periodic
         self.deg_of_freedom = 4
         self.vertex_coin = {}
-        
-    def draw_graph(self):    
+
+
+    def draw_graph(self):
         nx.draw(self.G)
         
     #returns neighbors of node v
@@ -58,10 +61,11 @@ class Graph():
         bin_max = self.get_bit_lims()
         bin_rep = []
         bin_vertex = self.find_bit_rep_vertex(v)
-        deg_of_fdm_bin = [int(d) for d in list(format(c, '0'+str(bin_max[2])+'b'))] 
-        
+        deg_of_fdm_bin = format(c, '0'+str(bin_max[2])+'b')
+        # deg_of_fdm_bin = [int(d) for d in list(format(c, '0'+str(bin_max[2])+'b'))] 
+
         return bin_vertex + deg_of_fdm_bin
     
 
     def add_coin(self, u, coin):
-        self.vertex_coin[self.find_bit_rep_vertex] = coin
+        self.vertex_coin[self.find_bit_rep_vertex(u)] = coin

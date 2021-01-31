@@ -279,9 +279,13 @@ class CellGrid(Canvas):
             self.switched.append(cell)
     def neighbors(row,column):
         cordinates = list();
-        
-def run():
-    pass # TODO
+
+
+    def run(self):
+        self.qcircuit.compile_and_run(
+            self.rowNumber + self.columnNumber, self.graph.vertex_coin)
+
+
 if __name__ == "__main__" :
     app = Tk()
     app.title("EntanglementX")
@@ -289,7 +293,7 @@ if __name__ == "__main__" :
     
     grid = CellGrid(app, num, num, 100,num)
     grid.pack()
-    run = Button(app, text="Run",
-        command=lambda : run, width=10).pack()
+    Button(app, text="Run",
+        command=lambda : grid.run(), width=10).pack()
 
     app.mainloop()
