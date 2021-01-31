@@ -25,18 +25,18 @@ class QwalkerGridCircuit():
             np.log2([self.graph.number_of_nodes(), 4]))]
 
 
-    def counter(self, add=1):
+    def flip_flop(self):
 
         circuit = QuantumCircuit(self.reg_len)
         start = 0
         end = self.N
-        print(self.N)
 
         for i in range(start, end - 1):
             target_qubit = i
             control_qubits = np.arange(i + 1, end, dtype=int).tolist()
             circuit.mcx(
-                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+                control_qubits + [self.vreg_len, self.vreg_len + 1],
+                target_qubit)
         circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
         circuit.barrier()
 
@@ -49,7 +49,8 @@ class QwalkerGridCircuit():
 
             circuit.x(self.vreg_len + 1)
             circuit.mcx(
-                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+                control_qubits + [self.vreg_len, self.vreg_len + 1],
+                target_qubit)
 
             for qubit in control_qubits:
                 circuit.x(qubit)
@@ -68,7 +69,8 @@ class QwalkerGridCircuit():
 
             circuit.x(self.vreg_len)
             circuit.mcx(
-                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+                control_qubits + [self.vreg_len, self.vreg_len + 1],
+                target_qubit)
             
             for qubit in control_qubits:
                 circuit.x(qubit)
@@ -78,29 +80,17 @@ class QwalkerGridCircuit():
         for i in range(start, end - 1):
             target_qubit = i
             control_qubits = np.arange(i + 1, end, dtype=int).tolist()
-            circuit.x(self.vreg_len)
             circuit.x(self.vreg_len + 1)
             circuit.mcx(
-                control_qubits + [self.vreg_len, self.vreg_len + 1], target_qubit)
+                control_qubits + [self.vreg_len, self.vreg_len + 1],
+                target_qubit)
         circuit.toffoli(self.vreg_len, self.vreg_len + 1, end - 1)
         circuit.barrier()
-    
+
+        circuit.x(self.vreg_len)
+        circuit.x(self.vreg_len + 1)
+
         return circuit
-
-
-    # def cyclic_counter(self, bound=None):
-
-    #     # treat boundary cases
-    #     if bound is None:
-    #         limit = [1 for i in range(self.vreg_len)]
-    #     else:
-    #         limit = bound
-        
-    #     # run counter
-
-    #     # undo operations
-        
-
 
 
 
