@@ -1,4 +1,5 @@
 from tkinter import *
+from random import randint
 # TODO form something import somehting
 import math
 class Cell():
@@ -7,13 +8,19 @@ class Cell():
     FILLED_COLOR_SELECTED = "#594f4f"
     FILLED_COLOR_HADAMARD = "#Fe4a49"
     FILLED_COLOR_GROVER = "#2ab7ca"
-    FILLED_COLOR_OTHER = "#fed766"
+    FILLED_COLOR_T = "#fed766"
     
+    FILLED_COLOR_SWAP =  "#dfa290"
+    
+    FILLED_COLOR_RANDOM =  "#1e1f26"
+    FILLED_COLOR_PHASE =  "#4d648d"
+    
+
     EMPTY_COLOR_BG = "white"
     FILLED_COLOR_BORDER = "black"
     EMPTY_COLOR_BORDER = "black"
     
-    cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 'other']
+    cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 't', 'swap', 'phase','random']
     
     def __init__(self, master, x, y, size,boardSize):
         """ Constructor of the object called by Cell(...) """
@@ -39,6 +46,14 @@ class Cell():
                 self.fill = 3;
         if condition_str == self.cell_condtion[4]:
                 self.fill = 4;
+        if condition_str == self.cell_condtion[5]:
+                self.fill = 5;
+        
+        if condition_str == self.cell_condtion[6]:
+                self.fill = 6;
+        
+        if condition_str == self.cell_condtion[7]:
+                self.fill = 7;
          
     def draw(self):
         """ order to the cell to draw its representation on the canvas """
@@ -59,8 +74,21 @@ class Cell():
                 fill = Cell.FILLED_COLOR_GROVER
                 outline = Cell.FILLED_COLOR_BORDER
             if  self.fill == 4:
-                fill = Cell.FILLED_COLOR_OTHER
+                fill = Cell.FILLED_COLOR_T
                 outline = Cell.FILLED_COLOR_BORDER
+
+            if  self.fill == 5:
+                fill = Cell.FILLED_COLOR_SWAP
+                outline = Cell.FILLED_COLOR_BORDER
+
+            if  self.fill == 6:
+                fill = Cell.FILLED_COLOR_PHASE
+                outline = Cell.FILLED_COLOR_BORDER
+
+            if  self.fill == 7:
+                fill = Cell.FILLED_COLOR_RANDOM
+                outline = Cell.FILLED_COLOR_BORDER
+            
             
             xmin = self.abs * self.size + self.xoffset
             xmax = xmin + self.size/2
@@ -130,7 +158,13 @@ class CellGrid(Canvas):
             column = -1;
         return row, column
     def putGate(self,root,str,cell):
+        cell_condtion = ['empty', 'selected', 'hadamard', 'grover', 't', 'swap', 'phase','random']
+
+        output_to_nitish = str
         print(str) # TODO you get the gate here
+        if str == "random":
+             output_to_nitish = cell_condtion[randint(2,6)]
+        print(output_to_nitish)
         cell._switch(str)
         cell.draw()
         root.destroy()
@@ -153,8 +187,13 @@ class CellGrid(Canvas):
         w.pack()
         hadamardGate = Button(root, text="Hadamard Gate", command=lambda : self.putGate(root,'hadamard',cell), width=10).pack()
         groverGate   = Button(root, text="Grover Gate", command=lambda : self.putGate(root,'grover',cell), width=10).pack()
-        otherGate    = Button(root, text="Other Gate", command=lambda : self.putGate(root,'other',cell), width=10).pack()
-        cancel       = Button(root, text="Cancel", command=lambda : self.putGate(root,'empty',cell), width=10).pack()
+        tGate    = Button(root, text="T Gate", command=lambda : self.putGate(root,'t',cell), width=10).pack()
+        SWAPGate = Button(root, text="SWAP Gate", command=lambda : self.putGate(root,'swap',cell), width=10).pack()
+        
+        phaseGate = Button(root, text="PHASE (S) Gate", command=lambda : self.putGate(root,'phase',cell), width=10).pack()
+        randomGate = Button(root, text="Random Gate", command=lambda : self.putGate(root,'random',cell), width=10).pack()
+        
+        cancel = Button(root, text="Cancel", command=lambda : self.putGate(root,'empty',cell), width=10).pack()
         root.protocol("WM_DELETE_WINDOW", lambda : self.putGate(root,'empty',cell))
 
         root.mainloop()
@@ -164,7 +203,9 @@ class CellGrid(Canvas):
         row, column = self._eventCoords(event)
         if row == -1:
             return
-        # TODO your function that gets row and column 
+        
+        # TODO your function that gets row and column will go here
+        
         cell = self.grid[row][column]
         if cell.fill != 0:
             return
